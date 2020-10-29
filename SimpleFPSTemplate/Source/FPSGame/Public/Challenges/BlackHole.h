@@ -28,14 +28,22 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 public:	
+
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UStaticMeshComponent* MeshComp;
 
-	UPROPERTY(EditAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* SphereAttactComp;
 
-	UPROPERTY(EditAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* SphereDesComp;
+
+	UFUNCTION()
+	void OverlapSphereDesComp(UPrimitiveComponent* OverlapSphereDesComp,
+			AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult
+	);
 };
