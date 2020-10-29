@@ -17,8 +17,6 @@ public:
 	// Sets default values for this actor's properties
 	AFPSObjectiveActor();
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	bool bIsCarryingObjective;
 protected:
 	// 定义一个组件 名称MeshComp,类型StaticMesh
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -40,5 +38,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 };
