@@ -4,6 +4,7 @@
 #include "FPSObjectiveActor.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "FPSCharacter.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
 AFPSObjectiveActor::AFPSObjectiveActor()
@@ -51,11 +52,13 @@ void AFPSObjectiveActor::Tick(float DeltaTime)
 	
 }
 
-void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor* OtherActor)
-{
+void AFPSObjectiveActor::NotifyActorBeginOverlap(AActor* OtherActor) {
 	// ¼Ì³ÐÓÚActor
 	Super::NotifyActorBeginOverlap(OtherActor);
 	PlayEffects();
-	
-	Destroy();
+	AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
+	if (MyCharacter) { 
+		MyCharacter->bIsCarryingObjective = true;
+		//Destroy();
+	}
 }
