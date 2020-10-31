@@ -49,7 +49,12 @@ public:
 	UAnimSequence* FireAnimation;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
+	bool bIsOverlapExtractionZone = false;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
 	bool bIsCarryingObjective = false;
+
+
 
 protected:
 	
