@@ -31,6 +31,8 @@ void AChangeMaterial::BeginPlay()
 {
 	Super::BeginPlay();
 	//MyMesh->SetMaterial(0, OffMaterial);
+	
+	
 	DrawDebugBox(GetWorld(), GetActorLocation(), FVector(100, 100, 100), FColor::White, true, -1, 0, 10);
 	
 
