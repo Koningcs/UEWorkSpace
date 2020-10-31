@@ -3,8 +3,9 @@
 
 #include "FPSExtractionZone.h"
 #include "Components/BoxComponent.h"
-
-
+#include "Components/DecalComponent.h"
+#include "DrawDebugHelpers.h"
+#include "FPSCharacter.h"
 
 // Sets default values
 AFPSExtractionZone::AFPSExtractionZone()
@@ -18,15 +19,21 @@ AFPSExtractionZone::AFPSExtractionZone()
 	OverlapComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	OverlapComp->SetBoxExtent(FVector(200.0f));
 	RootComponent = OverlapComp;
-	OverlapComp->SetHiddenInGame(false);
+	// 在游戏中显示
+	//OverlapComp->SetHiddenInGame(false);	
 	OverlapComp->OnComponentBeginOverlap.AddDynamic(this, &AFPSExtractionZone::HandleOverlap);
+
+	DecalComp = CreateDefaultSubobject<UDecalComponent>(TEXT("DecalComp"));
+	DecalComp->DecalSize = FVector(200.0f);
+	DecalComp->SetupAttachment(OverlapComp);
+
 }
 
 // Called when the game starts or when spawned
 void AFPSExtractionZone::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	//DrawDebugBox(GetWorld(), GetActorLocation(), FVector(200, 200, 200), FColor::Green, true, -1, 0, 1);
 }
 
 // Called every frame
@@ -38,5 +45,8 @@ void AFPSExtractionZone::Tick(float DeltaTime)
 
 void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("your massage"));
+	UE_LOG(LogTemp, Warning, TEXT("your 11massage"));
+
+	AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
+	if (MyCharacter) MyCharacter->bIsOverlapExtractionZone = true;
 }
