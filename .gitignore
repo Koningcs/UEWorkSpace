@@ -26,6 +26,11 @@ Intermediate/
 
 *.xml
 
+*.zip
+
+*.7z
+
+
 LandscapeEssentialConcept/
 
 LearnMaterial/
@@ -40,5 +45,6 @@ test/
 
 ThirdPerson/
 
-
 Gird/
+
+TestProj/
