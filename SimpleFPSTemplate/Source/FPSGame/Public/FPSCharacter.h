@@ -54,6 +54,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
 	bool bIsCarryingObjective = false;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
+	float YourTime = 0.0f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Gameplay")
+	float FinalTime = 0.0f;
 
 
 protected:
@@ -66,6 +71,8 @@ protected:
 
 	/** Handles strafing movement, left and right */
 	void MoveRight(float Val);
+
+	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 

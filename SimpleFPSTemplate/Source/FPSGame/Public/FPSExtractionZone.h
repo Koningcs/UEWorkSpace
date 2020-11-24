@@ -21,6 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	AFPSExtractionZone();
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -37,5 +38,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UDecalComponent* DecalComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+	USoundBase* ObjectiveMissingSound;// 目标物体缺失声音控件
 
 };

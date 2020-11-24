@@ -29,15 +29,15 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FVector PlayerViewPointLocation;		//ÉäÏßÆðÊ¼µã
-	FRotator PlayerViewPointRotation;		//Ãæ³¯·½Ïò
-	// »ñÈ¡½ÇÉ«µÄÎ»ÖÃºÍÐý×ª·½Ïò
+	FVector PlayerViewPointLocation;		//
+	FRotator PlayerViewPointRotation;		//
+	// ï¿½ï¿½È¡ï¿½ï¿½É«ï¿½ï¿½Î»ï¿½Ãºï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
 	FVector dir = PlayerViewPointRotation.Vector();
 	//UE_LOG(LogTemp, Warning, TEXT("dir %s"), *dir.ToString());
 	dir.Normalize();
 	//UE_LOG(LogTemp, Warning, TEXT("dir %s"), *dir.ToString());
-	FVector LineTraceEndLocation = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach; //ÉäÏßÖÕµã,Ô²ÐÄ×ø±ê
+	FVector LineTraceEndLocation = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach; //ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½,Ô²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	FVector Ends = LineTraceEndLocation;
 	FVector u = FVector(dir[1], -dir[0], 0);
 	FVector v = FVector::CrossProduct(dir, u);
@@ -90,6 +90,6 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		);
 	}
 
-
+	//æˆ‘çš„
 }
 

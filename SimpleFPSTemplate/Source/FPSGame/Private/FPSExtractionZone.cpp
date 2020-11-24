@@ -6,12 +6,15 @@
 #include "Components/DecalComponent.h"
 #include "DrawDebugHelpers.h"
 #include "FPSCharacter.h"
+#include "FPSGameMode.h"
+#include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AFPSExtractionZone::AFPSExtractionZone()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true; 
 
 	OverlapComp = CreateDefaultSubobject<UBoxComponent>(TEXT("OverlapComp"));
 	OverlapComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -45,8 +48,26 @@ void AFPSExtractionZone::Tick(float DeltaTime)
 
 void AFPSExtractionZone::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("your 11massage"));
-
+	
+	   
 	AFPSCharacter* MyCharacter = Cast<AFPSCharacter>(OtherActor);
-	if (MyCharacter) MyCharacter->bIsOverlapExtractionZone = true;
+
+	if (MyCharacter == nullptr) {
+		return;
+	}
+	
+	if (MyCharacter->bIsCarryingObjective) {
+		MyCharacter->bIsOverlapExtractionZone = true;
+		AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+		if (GM) {
+			GM->CompleteMission(MyCharacter);
+		}
+	}
+	else {
+		UGameplayStatics::PlaySound2D(this, ObjectiveMissingSound);
+		UE_LOG(LogTemp, Warning, TEXT("11"));
+	}
 }
+
+
+

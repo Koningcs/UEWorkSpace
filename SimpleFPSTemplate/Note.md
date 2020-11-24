@@ -40,3 +40,142 @@
    * 盒子组件`UBoxComponent`
    * 重叠事件绑定:`OnComponentBeginOverlap.AddDynamic(this, &xxx)`
   
+
+
+
+
+## 游戏规则
+
+### 设置任务结束
+  
+* 目标：任务结束后，我们不希望继续玩家控制器继续控制角色，所以在任务结束之后我们将禁止玩家继续控制角色
+
+``` C++
+//FPSExtractionZone.cpp
+AFPSCharacter * MyPawn = Cast<AFPSCharacter>(OtherActor);
+if(MyPawn && MyPawn->bIsCarryingObjective) {
+  AFPSGameMode* GM = Cast<AFPSGameMode>(GetWorld()->GetAuthGameMode());
+  if(GM) {
+    GM->CompleteMission(MyPawn);
+  }
+}
+//GetAuthGameMode仅在服务器上有效
+```
+
+``` C++ 
+// FPSGameMode.h
+void CompleteMission(APawn* InstigatorPawn); 
+
+// 函数公开到蓝图实现和处理，可以当作蓝图中的节点使用
+UFUNCTION(BlueprintImplementableEvent, Categor = "GameMode")
+void OnMissionCompleted(APawn* IstigatorPawn);
+
+// FPSGameMode.cpp
+void APFSGameMode::CompleteMission(APawn* InstigatorPawn) {
+  if(InstigatorPawn) {
+    // 禁用Charactar输入
+    InstigatorPawn->DisableInput(nullptr); // Alt+G 观察DisableInput源码
+  }
+  OnMissionCompleted(InstigatorPawn);
+  
+}
+
+// Charactor 控制pawn
+```
+
+### 添加Extraction反馈
+* 添加反馈字样：
+* 在`UI`中新建一个控件，命名为`WBP_GameOver` ， 放置一个`Text Box`
+* 将`Text Box`放置在屏幕中央，设置一个`Anchors`(锚)， 选择中央。
+* `Size To Content` 相对位置
+* 添加`Widget`的方法：`BeginPlay`(`OnMissionCompleted`)->`CreateWidgetGameWidget`->`AddtoViewport`
+
+* 添加反馈声音：
+``` C++
+// FPSExtractionZone.h
+UPROPERTY(EditDefaultsOnly, Category = "Sounds")
+USoundBase* ObjectiveMissingSound;// 目标物体缺失声音控件
+
+
+//FPSExtractionZone.cpp
+#include "Kismet/GameplayStatics.h"
+
+void HandleOverlap() {
+  AFPSCharacter* MyPawn = Case<AFPSCharacter>(OtherActor);
+  if(MyPawn == nullptr) {
+    return;
+  }
+  if(Pawn->bIsCarryingObjective) {
+  AFPSGameMode* GM = Case<AFPSGameMode>(GetWrold()->GetAuthGameMode());
+    if(GM) {
+      GM->CompleteMission(MyPawn);
+    }
+  }
+  else {
+    // 静态函数， 不属于对象实例， 属于这个类
+    UGameplayStatics::PlaySound2D(this, ObjectiveMissingSound);
+  }
+}
+
+
+```
+* `Edit->Advanced->Format Selection` 自动代码排版 
+* 在蓝图中设置音效文件，即可完成
+
+### 视角切换
+> 目标： 在完成任务时，把视角切换到上帝视角
+* 蓝图实现：
+  * 此时在触发`OnMissionCompleted`函数时，应该完成两件事：
+    * 输出提示
+    * 切换视角
+  * 所以我们在`BP_GameMode`->`OnMissionCompleted`后面添加一个`Sequence`节点,以便完成两件事
+  * 获取旧视角：在`BP_GameMode`,我们需要`GetController`并且将其转换为`PlayerController`,以获取旧的视角
+  * 添加另外一个视角：创建一个新的Actor命名为`BP_SpectatingViewpoint`设置`StaticMesh`为`Matinee`,选择在游戏中隐藏`Hidden in Game`, 拖入世界中，右键使用`Pilot`调整视角位置
+  * 设置视角切换：在`BP_GameMode`使用`GetAllActorOfClass`获得我们创建的`BP_SpectatingViewpoint`,然后用`SetViewTargetwithBlend`节点切换视角:`Target`是目前的视角，`New View Target`是新视角
+  
+  
+* C++ 实现
+  ``` C++ 
+  //protected:
+      UPROPERTY(EditDefaultsOnly, Category = "Spectating")
+      TSubclassOf<AActor> SpectatingViewpointClass;
+
+
+
+  //FPSGameMode.cpp
+  void AFPSGameMode::CompleteMission(APawn* InstigatorPawn) {
+    // 传过来的是pawn
+    if(InstigatorPawn) {
+      InstigatorPawn->DisableInput(InstigatorPawn);
+      if(SpectetingViewpointClass) {
+        TArray<AActor*> ReturnedActors;
+        UGameplayStatics::GetAllActorsOfClass(this, SpactatingViewpointClass, RetrunedActors);
+
+      }
+    }
+    OnMissionCompleted(InstigatorPawn); 
+  }
+
+  ```
+
+
+
+
+
+
+### Others
+* ConstructorHelpers 静态绑定
+
+### 调用顺序
+我们把actor蓝图直接拖入ue关卡中的话，应该会走从磁盘加载的流程。
+已位于关卡中的 Actor 使用此路径，如 LoadMap 发生时、或 AddToWorld（从流关卡或子关卡）被调用时。
+
+* 首先调用构造函数，包/关卡中的 Actor 从磁盘中进行加载。
+* PostLoad - 在序列化 Actor 从磁盘加载完成后被调用。
+* InitializeActorsForPlay
+* 为未初始化的 Actor 执行 RouteActorInitialize（包含无缝行程携带）
+  * PreInitializeComponents - 在 Actor 的组件上调用
+  * InitializeComponent 之前进行调用
+  * InitializeComponent - Actor 上定义的每个组件的创建辅助函数。
+  * PostInitializeComponents - Actor 的组件初始化后调用
+* BeginPlay - 关卡开始后调用

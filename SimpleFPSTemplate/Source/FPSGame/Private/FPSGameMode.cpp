@@ -3,6 +3,7 @@
 #include "FPSGameMode.h"
 #include "FPSHUD.h"
 #include "FPSCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "UObject/ConstructorHelpers.h"
 
 AFPSGameMode::AFPSGameMode()
@@ -13,4 +14,51 @@ AFPSGameMode::AFPSGameMode()
 
 	// use our custom HUD class
 	HUDClass = AFPSHUD::StaticClass();
+
+
+	
 }
+
+void AFPSGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	YourTime = 0.0f;
+}
+
+void AFPSGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void AFPSGameMode::CompleteMission(APawn* InstigatorPawn)
+{
+	if (InstigatorPawn) {
+
+		InstigatorPawn->DisableInput(nullptr);
+		AFPSCharacter* CH = Cast<AFPSCharacter>(InstigatorPawn);
+		CH->FinalTime = CH->YourTime;
+		OnMissionCompleted(InstigatorPawn);
+		if (NewViewClass) {
+			TArray<AActor*>ReturnedActors;
+			UGameplayStatics::GetAllActorsOfClass(this, NewViewClass, ReturnedActors);
+			if (ReturnedActors.Num() > 0) {
+				AActor* NewViewTarget = ReturnedActors[0];
+				APlayerController* PC = Cast<APlayerController>(InstigatorPawn->GetController());
+				
+				
+				if (PC) {
+					PC->SetViewTargetWithBlend(NewViewTarget, 1, EViewTargetBlendFunction::VTBlend_Cubic);
+				}
+			}
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("No new View point class"));
+		}
+
+	}
+}
+
+void AFPSGameMode::testfunction()
+{
+}
+

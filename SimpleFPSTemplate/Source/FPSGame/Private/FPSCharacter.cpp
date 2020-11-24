@@ -100,3 +100,15 @@ void AFPSCharacter::MoveRight(float Value)
 		AddMovementInput(GetActorRightVector(), Value);
 	}
 }
+
+void AFPSCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(PlayerViewPointLocation, PlayerViewPointRotation);
+	//UE_LOG(LogTemp, Warning, TEXT("dir %s"), *PlayerViewPointLocation.ToString());
+	YourTime += DeltaTime;
+
+
+}
